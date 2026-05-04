@@ -414,6 +414,16 @@ select:focus {
   border-color: var(--accent);
 }
 
+.form-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.form-row .input-group {
+  flex: 1;
+}
+
 /* ============================================
     Buttons
    ============================================ */
