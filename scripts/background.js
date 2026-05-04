@@ -4,7 +4,6 @@
 // ============================================
 
 const STORAGE_KEYS = {
-  CAPTURED_IMAGE: 'taskManager_capturedImage',
   OPERATION: 'taskManager_operation',
   OPERATION_ERROR: 'taskManager_operationError',
   TASK_RESULT: 'taskManager_result',

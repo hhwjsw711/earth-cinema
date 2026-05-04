@@ -1,33 +1,50 @@
-# Earth Cinema
+# 任务助手
 
-Chrome extension that transforms Google Earth 3D views into cinematic images and videos using [fal.ai](https://fal.ai).
+Chrome 扩展程序，用于快速创建任务并提交到任务看板。
 
-## Features
+## 功能特点
 
-- **Capture** any Google Earth 3D view
-- **Transform** with AI (Nano Banana Pro) into cinematic shots
-- **Generate videos** (Veo 3.1) with customizable duration and audio
+- **填写** - 填写任务标题、类型、状态、所属平台、区县等信息
+- **提交** - 快速创建任务并添加到任务看板
 
-## Setup
+## 安装教程（压缩包方式）
 
-1. Clone this repo
-2. Go to `chrome://extensions/`
-3. Enable "Developer mode"
-4. Click "Load unpacked" → select this folder
-5. Get your API key at [fal.ai/dashboard/keys](https://fal.ai/dashboard/keys)
-6. Click the extension icon and enter your API key
+### 步骤 1：下载安装包
 
-## Usage
+下载 `任务助手-v1.0.0.zip` 压缩包并解压。
 
-1. Navigate to [earth.google.com](https://earth.google.com/web)
-2. Find a scenic 3D view (works with any other view too, street view can also be really cool!)
-3. Click the extension icon
-4. Enter your fal.ai API key (first time only)
-5. Capture → Transform → Generate Video
+### 步骤 2：打开扩展程序管理页面
 
-## Tech
+在 Chrome 浏览器地址栏输入：`chrome://extensions/`
 
-- Chrome Extension (Manifest V3)
-- [fal.ai](https://fal.ai) APIs:
-  - `nano-banana-pro/edit` (image transformation)
-  - `veo3.1/fast/image-to-video` (video generation)
+### 步骤 3：启用开发者模式
+
+在页面右上角找到「开发者模式」开关，**将其开启**。
+
+### 步骤 4：加载扩展程序
+
+1. 点击页面左上角的「加载已解压的扩展程序」按钮
+2. 选择解压后的 `任务助手` 文件夹
+3. 等待扩展程序加载完成
+
+### 步骤 5：开始使用
+
+1. 点击浏览器右上角的扩展程序图标
+2. 首次使用需要配置 API 密钥（点击「API 配置」展开，填写后点击「保存密钥」）
+3. 按照两步操作：填写任务信息 → 提交
+
+## 使用说明
+
+### 创建任务
+
+1. **填写**：填写任务标题、任务类型、状态、所属平台、区县等信息
+2. **提交**：点击「提交任务」按钮，任务将自动添加到任务看板
+
+### 查看任务
+
+任务创建成功后，可点击「查看任务看板」跳转到任务管理系统查看所有任务。
+
+## 技术栈
+
+- Chrome 扩展程序 (Manifest V3)
+- Convex 后端服务

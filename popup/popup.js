@@ -12,11 +12,6 @@ const elements = {
   
   steps: document.querySelectorAll('.step'),
   
-  captureBtn: document.getElementById('capture-btn'),
-  captureSection: document.getElementById('capture-section'),
-  capturePreview: document.getElementById('capture-preview'),
-  previewImage: document.getElementById('preview-image'),
-  
   transformSection: document.getElementById('transform-section'),
   taskTitle: document.getElementById('task-title'),
   taskType: document.getElementById('task-type'),
@@ -39,7 +34,6 @@ const elements = {
 };
 
 const state = {
-  capturedImageBase64: null,
   currentOperation: null,
   isApiKeyVisible: false,
   hasApiKey: false,
@@ -49,7 +43,6 @@ const state = {
 const DEFAULT_API_KEY = 'tf_338bc8fc6a2c0a6e39f1bf2cc934c4b6ba687b11086c104695b9b2621464aad7';
 
 const STORAGE_KEYS = {
-  CAPTURED_IMAGE: 'taskManager_capturedImage',
   OPERATION: 'taskManager_operation',
   OPERATION_ERROR: 'taskManager_operationError',
   TASK_RESULT: 'taskManager_result'
@@ -65,12 +58,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadPersistedState() {
   try {
     const stored = await chrome.storage.local.get([
-      STORAGE_KEYS.CAPTURED_IMAGE,
       STORAGE_KEYS.OPERATION,
       STORAGE_KEYS.TASK_RESULT
     ]);
     
-    state.capturedImageBase64 = stored[STORAGE_KEYS.CAPTURED_IMAGE] || null;
     state.currentOperation = stored[STORAGE_KEYS.OPERATION] || null;
   } catch (error) {
     // Silent fail
@@ -80,7 +71,6 @@ async function loadPersistedState() {
 async function saveState() {
   try {
     await chrome.storage.local.set({
-      [STORAGE_KEYS.CAPTURED_IMAGE]: state.capturedImageBase64,
       [STORAGE_KEYS.OPERATION]: state.currentOperation
     });
   } catch (error) {
@@ -91,18 +81,9 @@ async function saveState() {
 async function restoreUI() {
   updateStep(1);
   
-  if (state.capturedImageBase64) {
-    elements.previewImage.src = state.capturedImageBase64;
-    elements.capturePreview.classList.remove('hidden');
-    elements.transformSection.classList.remove('hidden');
-    updateStep(2);
-  }
+  elements.transformSection.classList.remove('hidden');
+  elements.resetBtn?.classList.remove('hidden');
   
-  if (state.capturedImageBase64) {
-    elements.resetBtn?.classList.remove('hidden');
-  }
-  
-  // 只在有进行中的操作时才检查，不显示之前的结果
   if (state.currentOperation === 'creating') {
     showLoading('正在提交任务...');
     startPolling();
@@ -110,21 +91,20 @@ async function restoreUI() {
 }
 
 async function resetState() {
-  state.capturedImageBase64 = null;
   state.currentOperation = null;
   state.shownSuccess = false;
   
   await saveState();
   
-  elements.previewImage.src = '';
-  elements.capturePreview.classList.add('hidden');
   elements.transformSection.classList.add('hidden');
   elements.successSection.classList.add('hidden');
   elements.taskTitle.value = '';
   elements.taskDescription.value = '';
   elements.resetBtn?.classList.add('hidden');
   elements.apiCard.classList.remove('hidden');
-  elements.captureSection?.classList.remove('hidden');
+  
+  elements.transformSection.classList.remove('hidden');
+  elements.resetBtn?.classList.remove('hidden');
   
   updateStep(1);
   hideLoading();
@@ -147,7 +127,6 @@ async function checkApiKey() {
     elements.apiKeyInput.value = '••••••••••••••••••••';
     elements.apiKeyInput.dataset.saved = 'true';
     updateApiStatus(true);
-    elements.captureBtn.disabled = false;
   } catch (error) {
     // Silent fail
   }
@@ -158,7 +137,6 @@ function setupEventListeners() {
   elements.toggleVisibility.addEventListener('click', toggleKeyVisibility);
   elements.saveKeyBtn.addEventListener('click', saveApiKey);
   
-  elements.captureBtn.addEventListener('click', captureView);
   elements.transformBtn.addEventListener('click', createTask);
   
   elements.openBoardBtn?.addEventListener('click', () => {
@@ -181,14 +159,13 @@ function handleBackgroundMessage(message, sender, sendResponse) {
     
     if (message.success) {
       showToast('创建成功', `"${message.task?.title || '任务'}" 已添加到任务看板`, 'success');
-      updateStep(3);
+      updateStep(2);
       
       // 隐藏其他部分，只显示成功页面
       elements.transformSection.classList.add('hidden');
       elements.successSection.classList.remove('hidden');
       elements.resetBtn?.classList.add('hidden');
       elements.apiCard.classList.add('hidden');
-      elements.captureSection?.classList.add('hidden');
     } else {
       showToast('创建失败', message.error, 'error');
     }
@@ -246,7 +223,6 @@ async function saveApiKey() {
     elements.apiKeyInput.dataset.saved = 'true';
     elements.apiKeyInput.type = 'password';
     updateApiStatus(true);
-    elements.captureBtn.disabled = false;
     
     elements.apiCard.classList.remove('expanded');
     elements.apiContent.classList.add('collapsed');
@@ -268,45 +244,6 @@ function updateApiStatus(configured) {
     badge.classList.remove('configured');
     statusText.textContent = '未配置';
   }
-}
-
-async function captureView() {
-  if (!state.hasApiKey) {
-    showToast('需要 API 密钥', '请先配置您的 API 密钥', 'error');
-    toggleApiSection();
-    return;
-  }
-  
-  showLoading('正在截取当前页面...');
-  
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    
-    showLoading('正在截图...');
-    const imageData = await chrome.tabs.captureVisibleTab(null, {
-      format: 'png',
-      quality: 100
-    });
-    
-    if (imageData) {
-      state.capturedImageBase64 = imageData;
-      await saveState();
-      
-      elements.previewImage.src = imageData;
-      elements.capturePreview.classList.remove('hidden');
-      elements.transformSection.classList.remove('hidden');
-      elements.resetBtn?.classList.remove('hidden');
-      
-      updateStep(2);
-      showToast('截图完成', '请填写任务信息', 'success');
-    } else {
-      throw new Error('No image data returned');
-    }
-  } catch (error) {
-    showToast('截图失败', error.message || '请确保您已打开目标页面', 'error');
-  }
-  
-  hideLoading();
 }
 
 async function createTask() {
@@ -366,7 +303,7 @@ if (status.result && status.operation === null) {
         stopPolling();
         hideLoading();
         elements.transformBtn.disabled = false;
-        updateStep(3);
+        updateStep(2);
         const taskTitle = status.result.title || '任务';
         showToast('创建成功', `"${taskTitle}" 已添加到任务看板`, 'success');
         
