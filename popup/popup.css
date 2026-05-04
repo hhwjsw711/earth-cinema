@@ -1,6 +1,5 @@
 /* ============================================
-   Earth Cinema - Chrome Extension Styles
-   Clean, minimal, professional
+   Task Manager - Chrome Extension Styles
    ============================================ */
 
 :root {
@@ -57,12 +56,8 @@ body {
   flex-direction: column;
 }
 
-.ambient-bg {
-  display: none;
-}
-
 /* ============================================
-   Header
+    Header
    ============================================ */
 
 .header {
@@ -128,6 +123,20 @@ body {
   gap: 4px;
   opacity: 0.4;
   transition: opacity 0.2s;
+}
+
+.step.active {
+  opacity: 1;
+}
+
+.step:first-child {
+  opacity: 1;
+}
+
+.step:first-child .step-number {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
 }
 
 .step.active {
@@ -405,47 +414,8 @@ select:focus {
   border-color: var(--accent);
 }
 
-.transform-options {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-  margin-bottom: 12px;
-}
-
-.transform-options .input-group {
-  flex: 1;
-}
-
-.video-options {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-  margin-bottom: 12px;
-}
-
-.video-options .input-group {
-  flex: 1;
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  padding: 8px 0;
-}
-
-.toggle-label input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--accent);
-  cursor: pointer;
-}
-
 /* ============================================
-   Buttons
+    Buttons
    ============================================ */
 
 .btn {
@@ -682,6 +652,14 @@ select:focus {
   justify-content: center;
   gap: 20px;
   z-index: 200;
+}
+
+.loading-overlay.hidden {
+  display: none !important;
+}
+
+.loading-overlay:not(.hidden) {
+  display: flex !important;
 }
 
 .fal-logo-spinner {

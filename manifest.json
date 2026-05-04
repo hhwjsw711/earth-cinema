@@ -1,21 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "Earth Cinema",
+  "name": "任务助手",
   "version": "1.0.0",
-  "description": "Transform Google Earth views into cinematic drone shots and videos using AI",
-  "author": "fal.ai",
-  "homepage_url": "https://github.com/blendi-remade/earth-cinema",
+  "description": "快速创建任务",
   "permissions": [
     "activeTab",
     "storage",
     "tabs"
   ],
   "host_permissions": [
-    "https://earth.google.com/*",
-    "https://fal.run/*",
-    "https://fal.ai/*",
-    "https://v3.fal.media/*",
-    "https://queue.fal.run/*"
+    "https://*.convex.site/*",
+    "https://*.convex.cloud/*",
+    "https://accurate-shepherd-453.convex.site/*"
   ],
   "action": {
     "default_popup": "popup/popup.html",
@@ -25,13 +21,6 @@
       "128": "icons/icon128.png"
     }
   },
-  "content_scripts": [
-    {
-      "matches": ["https://earth.google.com/*"],
-      "js": ["scripts/content.js"],
-      "run_at": "document_idle"
-    }
-  ],
   "background": {
     "service_worker": "scripts/background.js"
   },
@@ -41,4 +30,3 @@
     "128": "icons/icon128.png"
   }
 }
-
